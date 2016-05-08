@@ -23,7 +23,6 @@ public class IntegrationTest {
     @Test
     public void bulkProcessingTest() throws Exception {
 
-        Period period;
         // Bulk Options:
         BulkProcessingOptions options = BulkProcessingOptions.builder()
                 .setBulkActions(100)
