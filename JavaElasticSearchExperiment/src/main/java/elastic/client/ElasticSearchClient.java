@@ -4,10 +4,12 @@
 package elastic.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import elastic.client.options.BulkProcessingOptions;
+import elastic.mapping.IObjectMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -15,23 +17,25 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
 import utils.JsonUtilities;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 public class ElasticSearchClient<TEntity> implements AutoCloseable {
 
-    private static final Logger logger = LogManager.getLogger(ElasticSearchClient.class);
+    private static final Logger log = LogManager.getLogger(ElasticSearchClient.class);
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final ObjectReader reader = new ObjectMapper().reader();
 
     private Client client;
     private String indexName;
+    private IObjectMapping objectMapping;
     private BulkProcessor bulkProcessor;
 
-    public ElasticSearchClient(final Client client, String indexName, final BulkProcessingOptions options) {
+    public ElasticSearchClient(final Client client, IObjectMapping objectMapping, String indexName, final BulkProcessingOptions options) {
         this.client = client;
         this.indexName = indexName;
+        this.objectMapping = objectMapping;
         this.bulkProcessor = createBulkProcessor(options);
     }
 
@@ -40,22 +44,22 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
                 new BulkProcessor.Listener() {
                     @Override
                     public void beforeBulk(long executionId, BulkRequest request) {
-                        if(logger.isDebugEnabled()) {
-                            logger.debug("Index {}: Before Bulk Insert with {} actions.", options.getName(), options.getBulkActions());
+                        if(log.isDebugEnabled()) {
+                            log.debug("Index {}: Before Bulk Insert with {} actions.", options.getName(), options.getBulkActions());
                         }
                     }
 
                     @Override
                     public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
-                        if(logger.isDebugEnabled()) {
-                            logger.debug("Index {}: After Bulk Insert with {} actions.", options.getName(), options.getBulkActions());
+                        if(log.isDebugEnabled()) {
+                            log.debug("Index {}: After Bulk Insert with {} actions.", options.getName(), options.getBulkActions());
                         }
                     }
 
                     @Override
                     public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
-                        if(logger.isErrorEnabled()) {
-                            logger.error("Error executing Bulk Insert", failure);
+                        if(log.isErrorEnabled()) {
+                            log.error("Error executing Bulk Insert", failure);
                         }
                     }
                 })
@@ -66,6 +70,31 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
                 .setFlushInterval(options.getFlushInterval())
                 .setBackoffPolicy(options.getBackoffPolicy())
                 .build();
+    }
+
+    public void createIndex() {
+        try {
+            internalCreateIndex();
+        } catch(Exception e) {
+            if(log.isErrorEnabled()) {
+                log.error("Error Creating Index", e);
+            }
+        }
+    }
+
+    private void internalCreateIndex()throws IOException {
+
+        final CreateIndexRequestBuilder createIndexRequestBuilder = client
+                .admin() // Get the Admin interface...
+                .indices() // Get the Indices interface...
+                .prepareCreate(indexName) // We want to create a new index ...
+                .setSource(objectMapping.getMapping().string());  // And set the custom mapping...
+
+        final CreateIndexResponse indexResponse = createIndexRequestBuilder.execute().actionGet();
+
+        if(log.isDebugEnabled()) {
+            log.debug("CreatedIndexResponse: isAcknowledged {}", indexResponse.isAcknowledged());
+        }
     }
 
     public void index(Stream<TEntity> entities) {

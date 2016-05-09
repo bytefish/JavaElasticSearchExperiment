@@ -5,6 +5,7 @@ import converter.LocalWeatherDataConverter;
 import csv.parser.Parsers;
 import elastic.client.ElasticSearchClient;
 import elastic.client.options.BulkProcessingOptions;
+import elastic.mapping.IObjectMapping;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.Test;
@@ -28,10 +29,16 @@ public class IntegrationTest {
                 .setBulkActions(100)
                 .build();
 
+        // Describes how to build the Index:
+        IObjectMapping elasticObjectMapping = new elastic.mapping.LocalWeatherDataMapper();
+
         // Create a new Client with default options:
         try (Client wrappedClient = TransportClient.builder().build()) {
             // Now wrap the client:
-            try (ElasticSearchClient<elastic.model.LocalWeatherData> client = new ElasticSearchClient<>(wrappedClient, "weather_data", options)) {
+            try (ElasticSearchClient<elastic.model.LocalWeatherData> client = new ElasticSearchClient<>(wrappedClient, elasticObjectMapping, "weather_data", options)) {
+                // Create the Index:
+                client.createIndex();
+
                 // And now process the data stream:
                 client.index(getData());
             }

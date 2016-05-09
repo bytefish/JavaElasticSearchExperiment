@@ -7,6 +7,8 @@ import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.ToXContent;
+import org.elasticsearch.common.xcontent.XContent;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.mapper.ContentPath;
 import org.elasticsearch.index.mapper.Mapper;
@@ -22,11 +24,19 @@ import org.elasticsearch.index.mapper.object.RootObjectMapper;
 
 import java.io.IOException;
 
-public class LocalWeatherDataMapper {
+public class LocalWeatherDataMapper implements IObjectMapping {
 
-    private static final String INDEX_TYPE = "mapping";
+    private static final String INDEX_TYPE = "document";
 
-    public String getMapping() throws IOException {
+    public XContentBuilder getMapping() {
+        try {
+            return internalGetMapping();
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public XContentBuilder internalGetMapping() throws IOException {
 
         RootObjectMapper.Builder rootObjectMapperBuilder = new RootObjectMapper.Builder(INDEX_TYPE)
                 .add(new DateFieldMapper.Builder("dateTime").store(true))
@@ -54,6 +64,6 @@ public class LocalWeatherDataMapper {
                 new SourceTransform[] {},
                 null);
 
-        return mapping.toXContent(JsonXContent.contentBuilder(), ToXContent.EMPTY_PARAMS).string();
+        return mapping.toXContent(JsonXContent.contentBuilder(), ToXContent.EMPTY_PARAMS);
     }
 }
