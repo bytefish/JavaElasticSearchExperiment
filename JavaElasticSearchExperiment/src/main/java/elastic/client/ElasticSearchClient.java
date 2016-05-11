@@ -6,6 +6,7 @@ package elastic.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import elastic.client.options.BulkProcessingOptions;
 import elastic.mapping.IObjectMapping;
+import elastic.utils.ElasticSearchUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
@@ -27,15 +28,15 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private Client client;
-    private String indexName;
-    private IObjectMapping objectMapping;
-    private BulkProcessor bulkProcessor;
+    private final Client client;
+    private final String indexName;
+    private final IObjectMapping mapping;
+    private final BulkProcessor bulkProcessor;
 
-    public ElasticSearchClient(final Client client, IObjectMapping objectMapping, String indexName, final BulkProcessingOptions options) {
+    public ElasticSearchClient(final Client client, final String indexName, final IObjectMapping mapping, final BulkProcessingOptions options) {
         this.client = client;
         this.indexName = indexName;
-        this.objectMapping = objectMapping;
+        this.mapping = mapping;
         this.bulkProcessor = createBulkProcessor(options);
     }
 
@@ -73,27 +74,14 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
     }
 
     public void createIndex() {
-        try {
-            internalCreateIndex();
-        } catch(Exception e) {
-            if(log.isErrorEnabled()) {
-                log.error("Error Creating Index", e);
-            }
+        if(!ElasticSearchUtils.indexExist(client, indexName).isExists()) {
+            ElasticSearchUtils.createIndex(client, indexName);
         }
     }
 
-    private void internalCreateIndex()throws IOException {
-
-        final CreateIndexRequestBuilder createIndexRequestBuilder = client
-                .admin() // Get the Admin interface...
-                .indices() // Get the Indices interface...
-                .prepareCreate(indexName) // We want to create a new index ...
-                .setSource(objectMapping.getMapping().string());  // And set the custom mapping...
-
-        final CreateIndexResponse indexResponse = createIndexRequestBuilder.execute().actionGet();
-
-        if(log.isDebugEnabled()) {
-            log.debug("CreatedIndexResponse: isAcknowledged {}", indexResponse.isAcknowledged());
+    public void createMapping() {
+        if(ElasticSearchUtils.indexExist(client, indexName).isExists()) {
+            ElasticSearchUtils.putMapping(client, indexName, mapping);
         }
     }
 

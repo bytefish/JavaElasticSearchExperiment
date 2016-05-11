@@ -3,8 +3,10 @@
 
 package elastic.mapping;
 
+import elastic.exceptions.GetMappingFailedException;
 import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.common.joda.FormatDateTimeFormatter;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContent;
@@ -26,30 +28,35 @@ import java.io.IOException;
 
 public class LocalWeatherDataMapper implements IObjectMapping {
 
-    private static final String INDEX_TYPE = "document";
+    private static final String INDEX_TYPE = "mappings";
 
     public XContentBuilder getMapping() {
         try {
             return internalGetMapping();
         } catch(Exception e) {
-            throw new RuntimeException(e);
+            throw new GetMappingFailedException(INDEX_TYPE, e);
         }
+    }
+
+    @Override
+    public String getType() {
+        return INDEX_TYPE;
     }
 
     public XContentBuilder internalGetMapping() throws IOException {
 
         RootObjectMapper.Builder rootObjectMapperBuilder = new RootObjectMapper.Builder(INDEX_TYPE)
-                .add(new DateFieldMapper.Builder("dateTime").store(true))
-                .add(new FloatFieldMapper.Builder("temperature").store(true))
-                .add(new FloatFieldMapper.Builder("windSpeed").store(true))
-                .add(new FloatFieldMapper.Builder("stationPressure").store(true))
-                .add(new StringFieldMapper.Builder("skyCondition").store(true))
+                .add(new DateFieldMapper.Builder("dateTime"))
+                .add(new FloatFieldMapper.Builder("temperature"))
+                .add(new FloatFieldMapper.Builder("windSpeed"))
+                .add(new FloatFieldMapper.Builder("stationPressure"))
+                .add(new StringFieldMapper.Builder("skyCondition"))
                 .add(new ObjectMapper.Builder("station")
-                        .add(new StringFieldMapper.Builder("wban").store(true))
-                        .add(new StringFieldMapper.Builder("name").store(true))
-                        .add(new StringFieldMapper.Builder("state").store(true))
-                        .add(new StringFieldMapper.Builder("location").store(true))
-                        .add(new GeoPointFieldMapper.Builder("geoPoint").store(true))
+                        .add(new StringFieldMapper.Builder("wban"))
+                        .add(new StringFieldMapper.Builder("name"))
+                        .add(new StringFieldMapper.Builder("state"))
+                        .add(new StringFieldMapper.Builder("location"))
+                        .add(new GeoPointFieldMapper.Builder("geoPoint"))
                         .nested(ObjectMapper.Nested.newNested(true, false)));
 
         Settings settings = Settings.builder()
@@ -64,6 +71,6 @@ public class LocalWeatherDataMapper implements IObjectMapping {
                 new SourceTransform[] {},
                 null);
 
-        return mapping.toXContent(JsonXContent.contentBuilder(), ToXContent.EMPTY_PARAMS);
+        return mapping.toXContent(JsonXContent.contentBuilder().startObject(), ToXContent.EMPTY_PARAMS);
     }
 }

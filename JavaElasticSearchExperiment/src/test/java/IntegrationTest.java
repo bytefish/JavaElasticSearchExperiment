@@ -8,13 +8,14 @@ import elastic.client.options.BulkProcessingOptions;
 import elastic.mapping.IObjectMapping;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.junit.Test;
 
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.time.Period;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,23 +25,33 @@ public class IntegrationTest {
     @Test
     public void bulkProcessingTest() throws Exception {
 
-        // Bulk Options:
+        // Describes how to build the Index:
+        IObjectMapping mapping = new elastic.mapping.LocalWeatherDataMapper();
+
+        // Bulk Options for the Wrapped Client:
         BulkProcessingOptions options = BulkProcessingOptions.builder()
                 .setBulkActions(100)
                 .build();
 
-        // Describes how to build the Index:
-        IObjectMapping elasticObjectMapping = new elastic.mapping.LocalWeatherDataMapper();
 
         // Create a new Client with default options:
-        try (Client wrappedClient = TransportClient.builder().build()) {
-            // Now wrap the client:
-            try (ElasticSearchClient<elastic.model.LocalWeatherData> client = new ElasticSearchClient<>(wrappedClient, elasticObjectMapping, "weather_data", options)) {
+        try (TransportClient transportClient = TransportClient.builder().build()) {
+
+            transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("127.0.0.1"), 9300));
+
+            // Now wrap the Elastic client in our bulk processing client:
+            try (ElasticSearchClient<elastic.model.LocalWeatherData> client = new ElasticSearchClient<>(transportClient, "weather_data", mapping, options)) {
+
                 // Create the Index:
                 client.createIndex();
 
+                // Create the Mapping:
+                client.createMapping();
+
                 // And now process the data stream:
-                client.index(getData());
+                try (Stream<elastic.model.LocalWeatherData> weatherDataStream = getData()) {
+                    client.index(weatherDataStream);
+                }
             }
         }
     }
@@ -51,22 +62,25 @@ public class IntegrationTest {
         Path stationFilePath = FileSystems.getDefault().getPath("C:\\Users\\philipp\\Downloads\\csv", "201503station.txt");
         Path weatherDataFilePath = FileSystems.getDefault().getPath("C:\\Users\\philipp\\Downloads\\csv", "201503hourly.txt");
 
-        // Create Lookup Dictionary to map stations from:
-        Map<String, csv.model.Station> stationMap = getStations(stationFilePath)
-                .collect(Collectors.toMap(csv.model.Station::getWban, x -> x));
+        try (Stream<csv.model.Station> stationStream = getStations(stationFilePath)) {
 
-        return getLocalWeatherData(weatherDataFilePath)
-                .filter(x -> stationMap.containsKey(x.getWban()))
-                .map(x -> {
-                    // Get the matching Station:
-                    csv.model.Station station = stationMap.get(x.getWban());
-                    // Convert to the Elastic Representation:
-                    return LocalWeatherDataConverter.convert(x, station);
-                });
+            // Get a Map of Stations for faster Lookup:
+            Map<String, csv.model.Station> stationMap = stationStream
+                    .collect(Collectors.toMap(csv.model.Station::getWban, x -> x));
+
+            // Now read the LocalWeatherData from CSV:
+            return getLocalWeatherData(weatherDataFilePath)
+                    .filter(x -> stationMap.containsKey(x.getWban()))
+                    .map(x -> {
+                        // Get the matching Station:
+                        csv.model.Station station = stationMap.get(x.getWban());
+                        // Convert to the Elastic Representation:
+                        return LocalWeatherDataConverter.convert(x, station);
+                    });
+        }
     }
 
     private static Stream<csv.model.Station> getStations(Path path) {
-
         return Parsers.StationParser().readFromFile(path, StandardCharsets.US_ASCII)
                 .filter(x -> x.isValid())
                 .map(x -> x.getResult());

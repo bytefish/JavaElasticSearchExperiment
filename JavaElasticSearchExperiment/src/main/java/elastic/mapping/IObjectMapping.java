@@ -9,4 +9,6 @@ public interface IObjectMapping {
 
     XContentBuilder getMapping();
 
+    String getType();
+
 }
