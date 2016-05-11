@@ -4,8 +4,13 @@
 package converter;
 
 
+import elastic.model.GeoLocation;
 import elastic.model.Station;
 import org.elasticsearch.common.geo.GeoPoint;
+import utils.DateUtilities;
+
+import java.sql.Date;
+import java.time.ZoneId;
 
 public class LocalWeatherDataConverter {
 
@@ -13,7 +18,7 @@ public class LocalWeatherDataConverter {
 
         elastic.model.LocalWeatherData elasticLocalWeatherData = new elastic.model.LocalWeatherData();
 
-        elasticLocalWeatherData.dateTime = csvLocalWeatherData.getDate().atTime(csvLocalWeatherData.getTime());
+        elasticLocalWeatherData.dateTime = DateUtilities.from(csvLocalWeatherData.getDate(), csvLocalWeatherData.getTime());
         elasticLocalWeatherData.skyCondition = csvLocalWeatherData.getSkyCondition();
         elasticLocalWeatherData.stationPressure = csvLocalWeatherData.getStationPressure();
         elasticLocalWeatherData.temperature = csvLocalWeatherData.getDryBulbCelsius();
@@ -32,7 +37,7 @@ public class LocalWeatherDataConverter {
         elasticStation.name = csvStation.getName();
         elasticStation.state = csvStation.getState();
         elasticStation.location = csvStation.getLocation();
-        elasticStation.geoPoint = new GeoPoint(csvStation.getLatitude(), csvStation.getLongitude());
+        elasticStation.geoLocation = new GeoLocation(csvStation.getLatitude(), csvStation.getLongitude());
 
         return elasticStation;
     }

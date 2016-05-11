@@ -20,7 +20,7 @@ public class Station {
     @JsonProperty("location")
     public String location;
 
-    @JsonProperty("geoPoint")
-    public GeoPoint geoPoint;
+    @JsonProperty("coordinates")
+    public GeoLocation geoLocation;
 
 }

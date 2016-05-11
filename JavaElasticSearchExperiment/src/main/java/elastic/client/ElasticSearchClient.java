@@ -101,6 +101,7 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
         return client.prepareIndex()
                 .setId(UUID.randomUUID().toString())
                 .setIndex(indexName)
+                .setType(mapping.getType())
                 .setSource(messageBytes)
                 .request();
     }

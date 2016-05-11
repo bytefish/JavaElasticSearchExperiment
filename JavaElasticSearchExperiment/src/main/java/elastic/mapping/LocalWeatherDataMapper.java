@@ -56,7 +56,9 @@ public class LocalWeatherDataMapper implements IObjectMapping {
                         .add(new StringFieldMapper.Builder("name"))
                         .add(new StringFieldMapper.Builder("state"))
                         .add(new StringFieldMapper.Builder("location"))
-                        .add(new GeoPointFieldMapper.Builder("geoPoint"))
+                        .add(new GeoPointFieldMapper.Builder("coordinates")
+                                .enableLatLon(true)
+                                .enableGeoHash(false))
                         .nested(ObjectMapper.Nested.newNested(true, false)));
 
         Settings settings = Settings.builder()
