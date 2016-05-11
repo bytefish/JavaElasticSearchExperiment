@@ -9,8 +9,6 @@ import elastic.mapping.IObjectMapping;
 import elastic.utils.ElasticSearchUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -18,7 +16,6 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
 import utils.JsonUtilities;
 
-import java.io.IOException;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -101,7 +98,7 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
         return client.prepareIndex()
                 .setId(UUID.randomUUID().toString())
                 .setIndex(indexName)
-                .setType(mapping.getType())
+                .setType(mapping.getIndexType())
                 .setSource(messageBytes)
                 .request();
     }

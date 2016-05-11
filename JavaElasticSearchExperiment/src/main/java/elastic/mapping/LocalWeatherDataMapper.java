@@ -6,10 +6,8 @@ package elastic.mapping;
 import elastic.exceptions.GetMappingFailedException;
 import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.common.joda.FormatDateTimeFormatter;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.ToXContent;
-import org.elasticsearch.common.xcontent.XContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.mapper.ContentPath;
@@ -28,7 +26,7 @@ import java.io.IOException;
 
 public class LocalWeatherDataMapper implements IObjectMapping {
 
-    private static final String INDEX_TYPE = "mappings";
+    private static final String INDEX_TYPE = "document";
 
     public XContentBuilder getMapping() {
         try {
@@ -38,8 +36,7 @@ public class LocalWeatherDataMapper implements IObjectMapping {
         }
     }
 
-    @Override
-    public String getType() {
+    public String getIndexType() {
         return INDEX_TYPE;
     }
 

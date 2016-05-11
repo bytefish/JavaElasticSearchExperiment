@@ -9,6 +9,6 @@ public interface IObjectMapping {
 
     XContentBuilder getMapping();
 
-    String getType();
+    String getIndexType();
 
 }

@@ -75,7 +75,7 @@ public class ElasticSearchUtils {
     private static PutMappingResponse internalPutMapping(Client client, String indexName, IObjectMapping mapping) throws IOException {
 
         final PutMappingRequest putMappingRequest = new PutMappingRequest(indexName)
-                .type(mapping.getType())
+                .type(mapping.getIndexType())
                 .source(mapping.getMapping().string());
 
         final PutMappingResponse putMappingResponse = client

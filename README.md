@@ -5,7 +5,7 @@
 This project is a sample for [Elasticsearch] with Java. The application parses the [Quality Controlled Local Climatological Data (QCLCD)] 
 from March 2015 and bulk inserts it into a Elasticsearch instance. It doesn't deal with Clustering and only inserts on a single node.
 
-This project is not finished yet, so please do not use it as a template for working with [Elasticsearch] in Java.
+I have used [Kibana] to create some visualizations and [JTinyCsvParser] to parse the CSV data.
 
 ## Dataset ##
 
@@ -18,6 +18,13 @@ The data is the [Quality Controlled Local Climatological Data (QCLCD)]:
 The data is available at:
 
 * [http://www.ncdc.noaa.gov/orders/qclcd/](http://www.ncdc.noaa.gov/orders/qclcd/)
+
+## Result ##
+
+<a href="https://raw.githubusercontent.com/bytefish/ElasticSearchExperiment/master/ElasticSearchExample/img/kibana.jpg">
+	<img src="https://raw.githubusercontent.com/bytefish/ElasticSearchExperiment/master/ElasticSearchExample/img/kibana.jpg" width="50%" height="50%" alt="Kibana Visualization of the Average Temperature" />
+</a>
+
 
 [JTinyCsvParser]: https://github.com/bytefish/JTinyCsvParser
 [Elasticsearch]: https://www.elastic.co/products/elasticsearch

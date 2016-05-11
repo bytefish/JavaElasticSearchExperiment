@@ -6,10 +6,6 @@ package csv.mapping;
 import csv.model.Station;
 import de.bytefish.jtinycsvparser.builder.IObjectCreator;
 import de.bytefish.jtinycsvparser.mapping.CsvMapping;
-import de.bytefish.jtinycsvparser.typeconverter.LocalDateConverter;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class StationMapper extends CsvMapping<Station>
 {
