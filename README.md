@@ -21,8 +21,8 @@ The data is available at:
 
 ## Result ##
 
-<a href="https://raw.githubusercontent.com/bytefish/ElasticSearchExperiment/master/ElasticSearchExample/img/kibana.jpg">
-	<img src="https://raw.githubusercontent.com/bytefish/ElasticSearchExperiment/master/ElasticSearchExample/img/kibana.jpg" width="50%" height="50%" alt="Kibana Visualization of the Average Temperature" />
+<a href="https://raw.githubusercontent.com/bytefish/JavaElasticSearchExperiment/master/JavaElasticSearchExperiment/img/kibana.jpg">
+	<img src="https://raw.githubusercontent.com/bytefish/JavaElasticSearchExperiment/master/JavaElasticSearchExperiment/img/kibana.jpg" width="50%" height="50%" alt="Kibana Visualization of the Average US Temperature in March 2015" />
 </a>
 
 
