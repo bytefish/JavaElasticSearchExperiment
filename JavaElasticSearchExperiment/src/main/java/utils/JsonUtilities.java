@@ -18,7 +18,7 @@ public class JsonUtilities {
         try {
 
             return Optional.empty().of(mapper.writeValueAsBytes(entity));
-        } catch(JsonProcessingException e) {
+        } catch(Exception e) {
             if(logger.isErrorEnabled()) {
                 logger.error(String.format("Failed to convert entity %s to JSON", entity), e);
             }
