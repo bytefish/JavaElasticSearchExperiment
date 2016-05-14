@@ -4,14 +4,13 @@
 package elastic.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import elastic.client.options.BulkProcessingOptions;
+import elastic.client.bulk.configuration.BulkProcessorConfiguration;
+import elastic.client.bulk.options.BulkProcessingOptions;
 import elastic.mapping.IObjectMapping;
 import elastic.utils.ElasticSearchUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
 import utils.JsonUtilities;
@@ -30,44 +29,11 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
     private final IObjectMapping mapping;
     private final BulkProcessor bulkProcessor;
 
-    public ElasticSearchClient(final Client client, final String indexName, final IObjectMapping mapping, final BulkProcessingOptions options) {
+    public ElasticSearchClient(final Client client, final String indexName, final IObjectMapping mapping, final BulkProcessorConfiguration bulkProcessorConfiguration) {
         this.client = client;
         this.indexName = indexName;
         this.mapping = mapping;
-        this.bulkProcessor = createBulkProcessor(options);
-    }
-
-    private BulkProcessor createBulkProcessor(final BulkProcessingOptions options) {
-        return BulkProcessor.builder(client,
-                new BulkProcessor.Listener() {
-                    @Override
-                    public void beforeBulk(long executionId, BulkRequest request) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Index {}: Before Bulk Insert with {} actions.", options.getName(), options.getBulkActions());
-                        }
-                    }
-
-                    @Override
-                    public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Index {}: After Bulk Insert with {} actions.", options.getName(), options.getBulkActions());
-                        }
-                    }
-
-                    @Override
-                    public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
-                        if(log.isErrorEnabled()) {
-                            log.error("Error executing Bulk Insert", failure);
-                        }
-                    }
-                })
-                .setName(options.getName())
-                .setConcurrentRequests(options.getConcurrentRequests())
-                .setBulkActions(options.getBulkActions())
-                .setBulkSize(options.getBulkSize())
-                .setFlushInterval(options.getFlushInterval())
-                .setBackoffPolicy(options.getBackoffPolicy())
-                .build();
+        this.bulkProcessor = bulkProcessorConfiguration.build(client);
     }
 
     public void createIndex() {

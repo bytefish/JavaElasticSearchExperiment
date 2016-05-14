@@ -17,7 +17,7 @@ public class LocalWeatherDataMapperTest {
 
     @Test
     public void valid_json_mapping_generated_when_calling_get_mapping() throws Exception {
-        
+
         // Create the Mapper:
         elastic.mapping.LocalWeatherDataMapper mapper = new elastic.mapping.LocalWeatherDataMapper();
 

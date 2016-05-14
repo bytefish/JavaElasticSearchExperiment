@@ -1,7 +1,7 @@
 // Copyright (c) Philipp Wagner. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-package elastic.client.options;
+package elastic.client.bulk.options;
 
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.common.unit.ByteSizeValue;

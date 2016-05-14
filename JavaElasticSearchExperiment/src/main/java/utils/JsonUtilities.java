@@ -16,7 +16,6 @@ public class JsonUtilities {
 
     public static <TEntity> Optional<byte[]> convertJsonToBytes(ObjectMapper mapper, TEntity entity) {
         try {
-
             return Optional.empty().of(mapper.writeValueAsBytes(entity));
         } catch(Exception e) {
             if(logger.isErrorEnabled()) {

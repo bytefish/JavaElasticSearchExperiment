@@ -4,11 +4,10 @@
 import converter.LocalWeatherDataConverter;
 import csv.parser.Parsers;
 import elastic.client.ElasticSearchClient;
-import elastic.client.options.BulkProcessingOptions;
+import elastic.client.bulk.configuration.BulkProcessorConfiguration;
+import elastic.client.bulk.options.BulkProcessingOptions;
 import elastic.mapping.IObjectMapping;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.junit.Test;
 
@@ -29,10 +28,9 @@ public class IntegrationTest {
         IObjectMapping mapping = new elastic.mapping.LocalWeatherDataMapper();
 
         // Bulk Options for the Wrapped Client:
-        BulkProcessingOptions options = BulkProcessingOptions.builder()
+        BulkProcessorConfiguration bulkConfiguration = new BulkProcessorConfiguration(BulkProcessingOptions.builder()
                 .setBulkActions(100)
-                .build();
-
+                .build());
 
         // Create a new Client with default options:
         try (TransportClient transportClient = TransportClient.builder().build()) {
@@ -40,7 +38,7 @@ public class IntegrationTest {
             transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("127.0.0.1"), 9300));
 
             // Now wrap the Elastic client in our bulk processing client:
-            try (ElasticSearchClient<elastic.model.LocalWeatherData> client = new ElasticSearchClient<>(transportClient, "weather_data", mapping, options)) {
+            try (ElasticSearchClient<elastic.model.LocalWeatherData> client = new ElasticSearchClient<>(transportClient, "weather_data", mapping, bulkConfiguration)) {
 
                 // Create the Index:
                 client.createIndex();
