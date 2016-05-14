@@ -3,11 +3,18 @@
 
 package csv.converter;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class IgnoreMissingValuesConverterTest {
     @Test
-    public void does_not_throw_when_given_invalid_value() throws Exception {
+    public void returns_null_if_value_is_missing() throws Exception {
 
+        IgnoreMissingValuesConverter converter = new IgnoreMissingValuesConverter("M", "m");
+
+        Assert.assertEquals(null, converter.convert("M"));
+        Assert.assertEquals(null, converter.convert("m"));
+
+        Assert.assertEquals(1.0f, converter.convert("1.0"), 1e-3);
     }
 }

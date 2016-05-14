@@ -14,8 +14,8 @@ public class IgnoreMissingValuesConverter implements ITypeConverter<Float> {
 
     private List<String> missingValueRepresentation;
 
-    public IgnoreMissingValuesConverter(String missingValueRepresentation) {
-        this.missingValueRepresentation = Arrays.asList(missingValueRepresentation);
+    public IgnoreMissingValuesConverter(String... missingValueRepresentation) {
+        this(Arrays.asList(missingValueRepresentation));
     }
 
     public IgnoreMissingValuesConverter(List<String> missingValueRepresentation) {
