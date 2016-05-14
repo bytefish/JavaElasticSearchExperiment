@@ -101,8 +101,5 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        if(client != null) {
-            client.close();
-        }
     }
 }
