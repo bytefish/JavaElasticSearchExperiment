@@ -6,12 +6,29 @@ package csv.converter;
 import de.bytefish.jtinycsvparser.typeconverter.ITypeConverter;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class IgnoreMissingValuesConverter implements ITypeConverter<Float> {
 
+    private List<String> missingValueRepresentation;
+
+    public IgnoreMissingValuesConverter(String missingValueRepresentation) {
+        this.missingValueRepresentation = Arrays.asList(missingValueRepresentation);
+    }
+
+    public IgnoreMissingValuesConverter(List<String> missingValueRepresentation) {
+        this.missingValueRepresentation = missingValueRepresentation;
+    }
+
     @Override
-    public Float convert(String s) {
-        if(s.equals("") || s.equalsIgnoreCase("m")) {
+    public Float convert(final String s) {
+        boolean isMissingValue = missingValueRepresentation
+                .stream()
+                .anyMatch(x -> x.equals(s));
+
+        if(isMissingValue) {
             return null;
         }
         return Float.parseFloat(s);
