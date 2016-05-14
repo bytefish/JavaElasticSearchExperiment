@@ -16,5 +16,6 @@ public class IgnoreMissingValuesConverterTest {
         Assert.assertEquals(null, converter.convert("m"));
 
         Assert.assertEquals(1.0f, converter.convert("1.0"), 1e-3);
+
     }
 }
