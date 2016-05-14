@@ -5,7 +5,6 @@ package elastic.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import elastic.client.bulk.configuration.BulkProcessorConfiguration;
-import elastic.client.bulk.options.BulkProcessingOptions;
 import elastic.mapping.IObjectMapping;
 import elastic.utils.ElasticSearchUtils;
 import org.apache.logging.log4j.LogManager;
@@ -15,6 +14,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
 import utils.JsonUtilities;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -46,6 +46,10 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
         if(ElasticSearchUtils.indexExist(client, indexName).isExists()) {
             ElasticSearchUtils.putMapping(client, indexName, mapping);
         }
+    }
+
+    public void index(List<TEntity> entities) {
+        index(entities.stream());
     }
 
     public void index(Stream<TEntity> entities) {
