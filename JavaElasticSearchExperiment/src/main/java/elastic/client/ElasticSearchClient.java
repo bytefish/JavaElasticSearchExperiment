@@ -84,13 +84,9 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
 
     public void index(Stream<TEntity> entities) {
         entities
-                // Get the JSON representation:
                 .map(x -> JsonUtilities.convertJsonToBytes(mapper, x))
-                // Filter only valid messages:
                 .filter(x -> x.isPresent())
-                // Create an IndexRequest for each message:
                 .map(x -> createIndexRequest(x.get()))
-                // And add it to the BulkProcessor:
                 .forEach(bulkProcessor::add);
     }
 
