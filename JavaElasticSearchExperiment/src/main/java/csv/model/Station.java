@@ -27,13 +27,13 @@ public class Station {
 
     private Float longitude;
 
-    private String groundHeight;
+    private Integer groundHeight;
 
-    private String stationHeight;
+    private Integer stationHeight;
 
-    private String barometer;
+    private Integer barometer;
 
-    private String timeZone;
+    private Integer timeZone;
 
     public Station() {
     }
@@ -126,35 +126,35 @@ public class Station {
         this.longitude = longitude;
     }
 
-    public String getGroundHeight() {
+    public Integer getGroundHeight() {
         return groundHeight;
     }
 
-    public void setGroundHeight(String groundHeight) {
+    public void setGroundHeight(Integer groundHeight) {
         this.groundHeight = groundHeight;
     }
 
-    public String getStationHeight() {
+    public Integer getStationHeight() {
         return stationHeight;
     }
 
-    public void setStationHeight(String stationHeight) {
+    public void setStationHeight(Integer stationHeight) {
         this.stationHeight = stationHeight;
     }
 
-    public String getBarometer() {
+    public Integer getBarometer() {
         return barometer;
     }
 
-    public void setBarometer(String barometer) {
+    public void setBarometer(Integer barometer) {
         this.barometer = barometer;
     }
 
-    public String getTimeZone() {
+    public Integer getTimeZone() {
         return timeZone;
     }
 
-    public void setTimeZone(String timeZone) {
+    public void setTimeZone(Integer timeZone) {
         this.timeZone = timeZone;
     }
 }

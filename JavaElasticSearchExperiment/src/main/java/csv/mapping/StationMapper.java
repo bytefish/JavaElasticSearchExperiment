@@ -24,9 +24,9 @@ public class StationMapper extends CsvMapping<Station>
         MapProperty(8, String.class, Station::setLocation);
         MapProperty(9, Float.class, Station::setLatitude);
         MapProperty(10, Float.class, Station::setLongitude);
-        MapProperty(11, String.class, Station::setGroundHeight);
-        MapProperty(12, String.class, Station::setStationHeight);
-        MapProperty(13, String.class, Station::setBarometer);
-        MapProperty(14, String.class, Station::setTimeZone);
+        MapProperty(11, Integer.class, Station::setGroundHeight);
+        MapProperty(12, Integer.class, Station::setStationHeight);
+        MapProperty(13, Integer.class, Station::setBarometer);
+        MapProperty(14, Integer.class, Station::setTimeZone);
     }
 }
