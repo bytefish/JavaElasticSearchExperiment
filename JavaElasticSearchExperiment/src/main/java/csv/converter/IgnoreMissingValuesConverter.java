@@ -4,6 +4,7 @@
 package csv.converter;
 
 import de.bytefish.jtinycsvparser.typeconverter.ITypeConverter;
+import utils.StringUtils;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -25,6 +26,10 @@ public class IgnoreMissingValuesConverter implements ITypeConverter<Float> {
     @Override
     public Float convert(final String s) {
 
+        if(StringUtils.isNullOrWhiteSpace(s)) {
+            return null;
+        }
+
         boolean isMissingValue = missingValueRepresentation
                 .stream()
                 .anyMatch(x -> x.equals(s));
@@ -32,6 +37,7 @@ public class IgnoreMissingValuesConverter implements ITypeConverter<Float> {
         if(isMissingValue) {
             return null;
         }
+
         return Float.parseFloat(s);
     }
 
