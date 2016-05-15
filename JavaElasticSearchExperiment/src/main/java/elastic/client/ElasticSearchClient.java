@@ -14,6 +14,8 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
 import utils.JsonUtilities;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -46,6 +48,12 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
         if(ElasticSearchUtils.indexExist(client, indexName).isExists()) {
             ElasticSearchUtils.putMapping(client, indexName, mapping);
         }
+    }
+
+    public void index(TEntity entity) {
+        index(Arrays.asList(entity));
+
+        bulkProcessor.flush();
     }
 
     public void index(List<TEntity> entities) {
