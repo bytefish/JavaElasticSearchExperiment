@@ -3,28 +3,29 @@
 
 package utils;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 public class DateUtilities {
 
     public static Date from(LocalDate localDate, LocalTime localTime) {
-        return from(localDate, localTime, ZoneId.systemDefault());
+        return from(localDate, localTime, ZoneOffset.UTC);
     }
 
-    public static Date from(LocalDate localDate, LocalTime localTime, ZoneId zoneId) {
+    public static Date from(LocalDate localDate, LocalTime localTime, ZoneOffset zoneOffset) {
         LocalDateTime localDateTime = localDate.atTime(localTime);
 
-        return from(localDateTime, zoneId);
+        return from(localDateTime, zoneOffset);
     }
 
-    public static Date from(LocalDateTime localDateTime) {
-        return from(localDateTime, ZoneId.systemDefault());
-    }
-
-    public static Date from(LocalDateTime localDateTime, ZoneId zoneId) {
-        ZonedDateTime zdt = localDateTime.atZone(zoneId);
+    public static Date from(LocalDateTime localDateTime, ZoneOffset zoneOffset) {
+        OffsetDateTime zdt = localDateTime.atOffset(zoneOffset);
 
         return Date.from(zdt.toInstant());
     }
+
 }

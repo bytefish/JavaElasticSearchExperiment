@@ -24,6 +24,7 @@ public class IgnoreMissingValuesConverter implements ITypeConverter<Float> {
 
     @Override
     public Float convert(final String s) {
+
         boolean isMissingValue = missingValueRepresentation
                 .stream()
                 .anyMatch(x -> x.equals(s));

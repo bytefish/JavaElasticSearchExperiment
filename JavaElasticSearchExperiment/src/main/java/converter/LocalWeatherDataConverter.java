@@ -11,6 +11,7 @@ import utils.DateUtilities;
 
 import java.sql.Date;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 public class LocalWeatherDataConverter {
 
@@ -18,7 +19,7 @@ public class LocalWeatherDataConverter {
 
         elastic.model.LocalWeatherData elasticLocalWeatherData = new elastic.model.LocalWeatherData();
 
-        elasticLocalWeatherData.dateTime = DateUtilities.from(csvLocalWeatherData.getDate(), csvLocalWeatherData.getTime());
+        elasticLocalWeatherData.dateTime = DateUtilities.from(csvLocalWeatherData.getDate(), csvLocalWeatherData.getTime(), ZoneOffset.ofHours(csvStation.getTimeZone()));
         elasticLocalWeatherData.skyCondition = csvLocalWeatherData.getSkyCondition();
         elasticLocalWeatherData.stationPressure = csvLocalWeatherData.getStationPressure();
         elasticLocalWeatherData.temperature = csvLocalWeatherData.getDryBulbCelsius();

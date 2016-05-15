@@ -14,7 +14,6 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
 import utils.JsonUtilities;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -79,5 +78,6 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
+        // If we ever need to close opened resources, it would go here ...
     }
 }
