@@ -25,6 +25,7 @@ public class ElasticSearchClientTest {
 
     @Test
     public void one_bulk_insert_on_transport_client_when_bulk_action_threshold_is_reached() {
+
         // Create Mocks:
         Client mockedTransportClient = mock(Client.class);
         BulkProcessor.Listener mockedBulkProcessorListener = mock(BulkProcessor.Listener.class);
@@ -64,6 +65,7 @@ public class ElasticSearchClientTest {
 
     @Test
     public void no_value_inserted_when_not_enough_requests() {
+        
         // Create Mocks:
         Client mockedTransportClient = mock(Client.class);
         BulkProcessor.Listener mockedBulkProcessorListener = mock(BulkProcessor.Listener.class);
