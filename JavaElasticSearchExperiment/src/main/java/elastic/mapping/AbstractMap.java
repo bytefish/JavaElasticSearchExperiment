@@ -20,9 +20,11 @@ import java.io.IOException;
 public abstract class AbstractMap implements IObjectMapping {
 
     private final String indexType;
+    private final String version;
 
-    public AbstractMap(String indexType) {
+    public AbstractMap(String indexType, String version) {
         this.indexType = indexType;
+        this.version = version;
     }
 
     public XContentBuilder getMapping() {
@@ -39,16 +41,21 @@ public abstract class AbstractMap implements IObjectMapping {
 
     public XContentBuilder internalGetMapping() throws IOException {
 
+        // Configure the RootObjectMapper:
         RootObjectMapper.Builder rootObjectMapperBuilder = getRootObjectBuilder();
+
+        // Populate the Settings:
         Settings.Builder settingsBuilder = getSettingsBuilder();
 
+        // Build the Mapping:
         Mapping mapping = new Mapping(
-                Version.fromString("1.0.0"),
+                Version.fromString(version),
                 rootObjectMapperBuilder.build(new Mapper.BuilderContext(settingsBuilder.build(), new ContentPath())),
                 new MetadataFieldMapper[] {},
                 new Mapping.SourceTransform[] {},
                 null);
 
+        // Turn it into JsonXContent:
         return mapping.toXContent(JsonXContent.contentBuilder().startObject(), ToXContent.EMPTY_PARAMS);
     }
 

@@ -17,7 +17,7 @@ public class LocalWeatherDataMapper extends AbstractMap {
     private static final String INDEX_TYPE = "document";
 
     public LocalWeatherDataMapper() {
-        super(INDEX_TYPE);
+        super(INDEX_TYPE, "1.0.0");
     }
 
     @Override
