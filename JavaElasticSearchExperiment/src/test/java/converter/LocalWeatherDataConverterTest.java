@@ -9,6 +9,7 @@ import utils.DateUtilities;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 public class LocalWeatherDataConverterTest {
     @Test
@@ -65,7 +66,7 @@ public class LocalWeatherDataConverterTest {
         elasticLocalWeatherData.temperature = csvLocalWeatherData.getDryBulbCelsius();
         elasticLocalWeatherData.stationPressure = csvLocalWeatherData.getStationPressure();
         elasticLocalWeatherData.skyCondition = csvLocalWeatherData.getSkyCondition();
-        elasticLocalWeatherData.dateTime = DateUtilities.from(csvLocalWeatherData.getDate(), csvLocalWeatherData.getTime());
+        elasticLocalWeatherData.dateTime = DateUtilities.from(csvLocalWeatherData.getDate(), csvLocalWeatherData.getTime(), ZoneOffset.ofHours(csvStationData.getTimeZone()));
         elasticLocalWeatherData.station = elasticStation;
 
         // Get the Converter Result:

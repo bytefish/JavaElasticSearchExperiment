@@ -12,7 +12,7 @@ public class TestUtils {
         void invoke();
     }
 
-    public static void assertThrows(Action action, Throwable expectedException) {
+    public static void assertThrows(Action action, Class<?> expectedException) {
         Throwable throwable = null;
         try {
             action.invoke();
@@ -22,7 +22,7 @@ public class TestUtils {
         if(throwable == null) {
             Assert.assertEquals(expectedException, null);
         } else {
-            Assert.assertEquals(expectedException.getClass(), throwable.getClass());
+            Assert.assertEquals(expectedException, throwable.getClass());
         }
     }
 

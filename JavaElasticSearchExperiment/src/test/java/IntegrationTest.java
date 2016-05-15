@@ -9,6 +9,7 @@ import elastic.client.bulk.options.BulkProcessingOptions;
 import elastic.mapping.IObjectMapping;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.InetAddress;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Ignore("Integration Test")
 public class IntegrationTest {
 
     @Test

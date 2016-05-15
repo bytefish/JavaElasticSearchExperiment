@@ -21,8 +21,6 @@ import java.util.stream.Stream;
 
 public class ElasticSearchClient<TEntity> implements AutoCloseable {
 
-    private static final Logger log = LogManager.getLogger(ElasticSearchClient.class);
-
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private final Client client;
