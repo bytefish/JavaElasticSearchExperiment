@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
@@ -23,82 +24,90 @@ public class ElasticSearchClientTest {
 
 
     @Test
-    public void bulkInsertionTest() {
-
+    public void one_bulk_insert_on_transport_client_when_bulk_action_threshold_is_reached() {
+        // Create Mocks:
+        Client mockedTransportClient = mock(Client.class);
         BulkProcessor.Listener mockedBulkProcessorListener = mock(BulkProcessor.Listener.class);
+
+        // Configure the BulkProcessor to use:
+        BulkProcessorConfiguration configuration = new BulkProcessorConfiguration(new BulkProcessingOptionsBuilder().build(), mockedBulkProcessorListener);
+
+        // And create a fake index builder:
+        IndexRequestBuilder indexRequestBuilder = new IndexRequestBuilder(mockedTransportClient, IndexAction.INSTANCE);
+
+        // The mapping to use:
+        IObjectMapping localWeatherDataMapper = new elastic.mapping.LocalWeatherDataMapper();
 
         // Index to insert to:
         String indexName = "weather_data";
 
-        // Configure the BulkRequests:
-        BulkProcessorConfiguration configuration = new BulkProcessorConfiguration(new BulkProcessingOptionsBuilder().build(), mockedBulkProcessorListener);
-
-        // Mock the underlying Transport Client:
-        Client mockedTransportClient = mock(Client.class);
-
         // Initialize it with the default settings:
-        when(mockedTransportClient.settings()).thenReturn(Settings.builder().build());
+        when(mockedTransportClient.settings())
+                .thenReturn(Settings.builder().build());
 
-        // And create a fake index builder:
-        IndexRequestBuilder stubbedRequestBuilder = new IndexRequestBuilder(mockedTransportClient, IndexAction.INSTANCE);
+        when(mockedTransportClient.prepareIndex())
+                .thenReturn(indexRequestBuilder);
 
-        when(mockedTransportClient.prepareIndex()).thenReturn(stubbedRequestBuilder);
-
-        // The mapping:
-        IObjectMapping localWeatherDataMapper = new elastic.mapping.LocalWeatherDataMapper();
-
+        // Create the Test subject:
         ElasticSearchClient<elastic.model.LocalWeatherData> elasticSearchClient = new ElasticSearchClient<>(mockedTransportClient, indexName, localWeatherDataMapper, configuration);
 
+        // Create more entities, than Bulk insertion threshold:
+        Stream<LocalWeatherData> entitiesStream = getData(configuration.getBulkProcessingOptions().getBulkActions() + 1).stream();
 
-        List<LocalWeatherData> entitiesToInsert = new ArrayList<>();
+        // Index the Data:
+        elasticSearchClient.index(entitiesStream);
 
-        for (int i = 0; i < configuration.getBulkProcessingOptions().getBulkActions() + 1; i++) {
-            entitiesToInsert.add(new LocalWeatherData());
-        }
-
-        elasticSearchClient.index(entitiesToInsert.stream());
-
+        // Verify, that the TransportClient bulk insert has been called:
         verify(mockedTransportClient, times(1)).bulk(anyObject(), anyObject());
         verify(mockedBulkProcessorListener, times(1)).beforeBulk(anyLong(), anyObject());
     }
 
     @Test
     public void no_value_inserted_when_not_enough_requests() {
-
+        // Create Mocks:
+        Client mockedTransportClient = mock(Client.class);
         BulkProcessor.Listener mockedBulkProcessorListener = mock(BulkProcessor.Listener.class);
+
+        // Configure the BulkProcessor to use:
+        BulkProcessorConfiguration configuration = new BulkProcessorConfiguration(new BulkProcessingOptionsBuilder().build(), mockedBulkProcessorListener);
+
+        // And create a fake index builder:
+        IndexRequestBuilder indexRequestBuilder = new IndexRequestBuilder(mockedTransportClient, IndexAction.INSTANCE);
+
+        // The mapping to use:
+        IObjectMapping localWeatherDataMapper = new elastic.mapping.LocalWeatherDataMapper();
 
         // Index to insert to:
         String indexName = "weather_data";
 
-        // Configure the BulkRequests:
-        BulkProcessorConfiguration configuration = new BulkProcessorConfiguration(new BulkProcessingOptionsBuilder().build(), mockedBulkProcessorListener);
-
-        // Mock the underlying Transport Client:
-        Client mockedTransportClient = mock(Client.class);
-
         // Initialize it with the default settings:
-        when(mockedTransportClient.settings()).thenReturn(Settings.builder().build());
+        when(mockedTransportClient.settings())
+                .thenReturn(Settings.builder().build());
 
-        // And create a fake index builder:
-        IndexRequestBuilder stubbedRequestBuilder = new IndexRequestBuilder(mockedTransportClient, IndexAction.INSTANCE);
+        when(mockedTransportClient.prepareIndex())
+                .thenReturn(indexRequestBuilder);
 
-        when(mockedTransportClient.prepareIndex()).thenReturn(stubbedRequestBuilder);
-
-        // The mapping:
-        IObjectMapping localWeatherDataMapper = new elastic.mapping.LocalWeatherDataMapper();
-
+        // Create the Test subject:
         ElasticSearchClient<elastic.model.LocalWeatherData> elasticSearchClient = new ElasticSearchClient<>(mockedTransportClient, indexName, localWeatherDataMapper, configuration);
 
+        // Create more entities, than Bulk insertion threshold:
+        Stream<LocalWeatherData> entitiesStream = getData(configuration.getBulkProcessingOptions().getBulkActions() - 1).stream();
 
+        // Index the Data:
+        elasticSearchClient.index(entitiesStream);
+
+        // Verify, that the TransportClient bulk insert has been called:
+        verify(mockedTransportClient, times(0)).bulk(anyObject(), anyObject());
+        verify(mockedBulkProcessorListener, times(0)).beforeBulk(anyLong(), anyObject());
+    }
+
+    private List<elastic.model.LocalWeatherData> getData(int numberOfEntities) {
         List<LocalWeatherData> entitiesToInsert = new ArrayList<>();
 
-        for (int i = 0; i < configuration.getBulkProcessingOptions().getBulkActions() - 1; i++) {
+        for (int i = 0; i < numberOfEntities; i++) {
             entitiesToInsert.add(new LocalWeatherData());
         }
 
-        elasticSearchClient.index(entitiesToInsert.stream());
-
-        verify(mockedTransportClient, times(0)).bulk(anyObject(), anyObject());
-        verify(mockedBulkProcessorListener, times(0)).beforeBulk(anyLong(), anyObject());
+        return entitiesToInsert;
     }
 }
