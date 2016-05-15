@@ -65,7 +65,7 @@ public class ElasticSearchClientTest {
 
     @Test
     public void no_value_inserted_when_not_enough_requests() {
-        
+
         // Create Mocks:
         Client mockedTransportClient = mock(Client.class);
         BulkProcessor.Listener mockedBulkProcessorListener = mock(BulkProcessor.Listener.class);
