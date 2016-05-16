@@ -3,7 +3,6 @@
 
 package utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +13,9 @@ public class JsonUtilities {
 
     private static final Logger logger = LogManager.getLogger(JsonUtilities.class);
 
-    public static <TEntity> Optional<byte[]> convertJsonToBytes(ObjectMapper mapper, TEntity entity) {
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    public static <TEntity> Optional<byte[]> convertJsonToBytes(TEntity entity) {
         try {
             return Optional.empty().of(mapper.writeValueAsBytes(entity));
         } catch(Exception e) {

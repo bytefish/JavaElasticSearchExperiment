@@ -3,12 +3,9 @@
 
 package elastic.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import elastic.client.bulk.configuration.BulkProcessorConfiguration;
 import elastic.mapping.IObjectMapping;
 import elastic.utils.ElasticSearchUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
@@ -20,8 +17,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 public class ElasticSearchClient<TEntity> implements AutoCloseable {
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     private final Client client;
     private final String indexName;
@@ -59,7 +54,7 @@ public class ElasticSearchClient<TEntity> implements AutoCloseable {
 
     public void index(Stream<TEntity> entities) {
         entities
-                .map(x -> JsonUtilities.convertJsonToBytes(mapper, x))
+                .map(x -> JsonUtilities.convertJsonToBytes(x))
                 .filter(x -> x.isPresent())
                 .map(x -> createIndexRequest(x.get()))
                 .forEach(bulkProcessor::add);
