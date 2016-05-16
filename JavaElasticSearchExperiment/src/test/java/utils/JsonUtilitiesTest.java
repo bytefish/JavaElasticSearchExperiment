@@ -28,7 +28,7 @@ public class JsonUtilitiesTest {
 
         entity.val = "Test";
 
-        Optional<byte[]> resultBytes = JsonUtilities.convertJsonToBytes(mapper, entity);
+        Optional<byte[]> resultBytes = JsonUtilities.convertJsonToBytes(entity);
 
         Assert.assertEquals(true, resultBytes.isPresent());
         Assert.assertEquals("{\"val\":\"Test\"}", new String(resultBytes.get()));
