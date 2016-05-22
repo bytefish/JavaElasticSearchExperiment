@@ -3,6 +3,7 @@
 
 package elastic.mapping;
 
+import de.bytefish.elasticutils.mapping.BaseElasticSearchMapping;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.mapper.core.DateFieldMapper;
@@ -12,7 +13,7 @@ import org.elasticsearch.index.mapper.geo.GeoPointFieldMapper;
 import org.elasticsearch.index.mapper.object.ObjectMapper;
 import org.elasticsearch.index.mapper.object.RootObjectMapper;
 
-public class LocalWeatherDataMapper extends AbstractMap {
+public class LocalWeatherDataMapper extends BaseElasticSearchMapping {
 
     private static final String INDEX_TYPE = "document";
 

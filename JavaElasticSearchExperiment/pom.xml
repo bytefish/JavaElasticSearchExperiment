@@ -30,6 +30,12 @@
         </dependency>
 
         <dependency>
+            <groupId>de.bytefish</groupId>
+            <artifactId>elasticutils</artifactId>
+            <version>0.2</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
             <version>2.3.2</version>

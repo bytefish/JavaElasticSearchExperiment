@@ -13,6 +13,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: de.bytefish:jtinycsvparser:1.1" level="project" />
+    <orderEntry type="library" name="Maven: de.bytefish:elasticutils:0.2" level="project" />
     <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch:2.3.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:5.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-backward-codecs:5.5.0" level="project" />

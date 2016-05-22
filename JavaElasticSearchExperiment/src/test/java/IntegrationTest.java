@@ -3,10 +3,13 @@
 
 import converter.LocalWeatherDataConverter;
 import csv.parser.Parsers;
-import elastic.client.ElasticSearchClient;
-import elastic.client.bulk.configuration.BulkProcessorConfiguration;
-import elastic.client.bulk.options.BulkProcessingOptions;
-import elastic.mapping.IObjectMapping;
+import de.bytefish.elasticutils.client.ElasticSearchClient;
+import de.bytefish.elasticutils.client.bulk.configuration.BulkProcessorConfiguration;
+import de.bytefish.elasticutils.client.bulk.options.BulkProcessingOptions;
+import de.bytefish.elasticutils.mapping.IElasticSearchMapping;
+import de.bytefish.elasticutils.utils.ElasticSearchUtils;
+import elastic.model.LocalWeatherData;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.junit.Ignore;
@@ -26,8 +29,11 @@ public class IntegrationTest {
     @Test
     public void bulkProcessingTest() throws Exception {
 
-        // Describes how to build the Index:
-        IObjectMapping mapping = new elastic.mapping.LocalWeatherDataMapper();
+        // Index to operate on:
+        String indexName = "weather_data";
+
+        // Describes how to build the Mapping:
+        IElasticSearchMapping mapping = new elastic.mapping.LocalWeatherDataMapper();
 
         // Bulk Options for the Wrapped Client:
         BulkProcessorConfiguration bulkConfiguration = new BulkProcessorConfiguration(BulkProcessingOptions.builder()
@@ -39,20 +45,29 @@ public class IntegrationTest {
 
             transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("127.0.0.1"), 9300));
 
+            createIndex(transportClient, indexName);
+            createMapping(transportClient, indexName, mapping);
+
             // Now wrap the Elastic client in our bulk processing client:
-            try (ElasticSearchClient<elastic.model.LocalWeatherData> client = new ElasticSearchClient<>(transportClient, "weather_data", mapping, bulkConfiguration)) {
-
-                // Create the Index:
-                client.createIndex();
-
-                // Create the Mapping:
-                client.createMapping();
+            try (ElasticSearchClient<LocalWeatherData> client = new ElasticSearchClient<>(transportClient, indexName, mapping, bulkConfiguration)) {
 
                 // And now process the data stream:
                 try (Stream<elastic.model.LocalWeatherData> weatherDataStream = getData()) {
                     client.index(weatherDataStream);
                 }
             }
+        }
+    }
+
+    private void createIndex(Client client, String indexName) {
+        if(!ElasticSearchUtils.indexExist(client, indexName).isExists()) {
+            ElasticSearchUtils.createIndex(client, indexName);
+        }
+    }
+
+    private void createMapping(Client client, String indexName, IElasticSearchMapping mapping) {
+        if(ElasticSearchUtils.indexExist(client, indexName).isExists()) {
+            ElasticSearchUtils.putMapping(client, indexName, mapping);
         }
     }
 
