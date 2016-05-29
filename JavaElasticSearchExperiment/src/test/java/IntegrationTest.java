@@ -52,7 +52,7 @@ public class IntegrationTest {
             try (ElasticSearchClient<LocalWeatherData> client = new ElasticSearchClient<>(transportClient, indexName, mapping, bulkConfiguration)) {
 
                 // And now process the data stream:
-                try (Stream<elastic.model.LocalWeatherData> weatherDataStream = getData()) {
+                try (Stream<elastic.model.LocalWeatherData> weatherDataStream = getLocalWeatherData()) {
                     client.index(weatherDataStream);
                 }
             }
@@ -71,7 +71,7 @@ public class IntegrationTest {
         }
     }
 
-    private static Stream<elastic.model.LocalWeatherData> getData() {
+    private static Stream<elastic.model.LocalWeatherData> getLocalWeatherData() {
 
         // Data to read from:
         Path stationFilePath = FileSystems.getDefault().getPath("C:\\Users\\philipp\\Downloads\\csv", "201503station.txt");
@@ -79,7 +79,7 @@ public class IntegrationTest {
 
         try (Stream<csv.model.Station> stationStream = getStations(stationFilePath)) {
 
-            // Get a Map of Stations for faster Lookup:
+            // Build a Map of Stations for faster Lookup, when parsing:
             Map<String, csv.model.Station> stationMap = stationStream
                     .collect(Collectors.toMap(csv.model.Station::getWban, x -> x));
 
@@ -106,6 +106,5 @@ public class IntegrationTest {
         return Parsers.LocalWeatherDataParser().readFromFile(path, StandardCharsets.US_ASCII)
                 .filter(x -> x.isValid())
                 .map(x -> x.getResult());
-
     }
 }
