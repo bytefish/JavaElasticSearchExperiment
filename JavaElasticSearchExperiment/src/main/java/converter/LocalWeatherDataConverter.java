@@ -5,12 +5,8 @@ package converter;
 
 
 import elastic.model.GeoLocation;
-import elastic.model.Station;
-import org.elasticsearch.common.geo.GeoPoint;
 import utils.DateUtilities;
 
-import java.sql.Date;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 public class LocalWeatherDataConverter {

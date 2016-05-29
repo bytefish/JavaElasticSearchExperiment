@@ -7,7 +7,6 @@ import de.bytefish.jtinycsvparser.typeconverter.ITypeConverter;
 import utils.StringUtils;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
