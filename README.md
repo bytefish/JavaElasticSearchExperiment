@@ -7,6 +7,10 @@ from March 2015 and bulk inserts it into a Elasticsearch instance. It doesn't de
 
 I have used [Kibana] to create some visualizations and [JTinyCsvParser] to parse the CSV data.
 
+Please see the blog post for more information on how to work with the code:
+
+* https://bytefish.de/blog/elasticsearch_java/
+
 ## Dataset ##
 
 The data is the [Quality Controlled Local Climatological Data (QCLCD)]: 
